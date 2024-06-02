@@ -1,13 +1,6 @@
 from openai import AsyncOpenAI
-from config_data.config import load_config, Config
 import base64
 import aiohttp
-
-config: Config = load_config()
-
-API_KEY = config.open_ai.openai_key
-
-client = AsyncOpenAI(api_key=API_KEY)
 
 
 def encode_image(image_path):
@@ -15,10 +8,12 @@ def encode_image(image_path):
         return base64.b64encode(image_file.read()).decode("utf-8")
 
 
-async def recognize_car(image_path: str) -> str:
+async def recognize_car(image_path: str, api_key: str) -> str:
+    AsyncOpenAI(api_key=api_key)
+
     base64_image = encode_image(image_path)
 
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {API_KEY}"}
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"}
 
     payload = {
         "model": "gpt-4-turbo",

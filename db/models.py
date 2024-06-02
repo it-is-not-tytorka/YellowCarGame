@@ -1,10 +1,16 @@
 from sqlalchemy import Integer, String, Boolean, Date
 from sqlalchemy.orm import Mapped, mapped_column
-from db.db import Base, engine, session
 from datetime import date
+from sqlalchemy.orm import DeclarativeBase
+
+
+class Base(DeclarativeBase):
+    pass
 
 
 class User(Base):
+
+
     """
     A model which represents a user in a database.
 
@@ -44,7 +50,7 @@ class UserManager:
     Add a user to a database, check his presence to a database, get and change user's attributes.
     """
 
-    def __init__(self, db_engine=engine, db_session=session) -> None:
+    def __init__(self, db_engine, db_session) -> None:
         self.db_engine = db_engine
         self.db_session = db_session
 
@@ -78,15 +84,6 @@ class UserManager:
         )
         return False if len(user) == 0 else user[0]
 
-    def check_user(self, user):
-        if not self.get_user(user.id):
-            self.add_user(
-                user_id=user.id,
-                username=user.username,
-                first_name=user.first_name,
-                last_name=user.last_name,
-            )
-
     def increase_score(self, user_id: int):
         user: User = self.get_user(user_id)
         if user:
@@ -114,7 +111,7 @@ class ImageManager:
     on a command /spend.
     """
 
-    def __init__(self, db_engine=engine, db_session=session):
+    def __init__(self, db_engine, db_session):
         self.db_engine = db_engine
         self.db_session = db_session
 
@@ -147,5 +144,3 @@ class ImageManager:
         image.is_used = True
         self.db_session.commit()
 
-
-Base.metadata.create_all(engine)
